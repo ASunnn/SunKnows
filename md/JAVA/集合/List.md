@@ -211,6 +211,7 @@ LinkedList与ArrayList使用起来差不多，但LinkedList是使用链表作为
 LinkedList不支持多线程
 
 另外，LinkedList还是Queue的近亲：
+
 ![](../PIC/集合-LinkedList继承关系.png)
 
 正因如此，LinkedList有*getFirst()*、*getLast()* 、*removeFirst()*、*removeLast()*、*addFirst(E e)*、*addLast(E e)*，甚至*peek()*、*poll()*、*offer(E e)*、*push(E e)*、*pop()*等一众方法

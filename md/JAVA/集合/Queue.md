@@ -210,6 +210,273 @@ PriorityQueue是一个小顶堆，当有增删操作的时候必须要对这个�
 
 ## Deque
 
+Deque接口是Queue接口的子类
+
+
+![](../PIC/集合-Deque接口类结构.png)
+
+可以看出，Deque在Queue的基础上多出了针对队头和队尾的操作
+
+Deque的常用实现有ArrayDeque和LinkedList
+
 ---
 
 ## ArrayDeque
+
+ArrayDeque，实现了Deque接口，底层是用Object数组实现的循环队列
+
+```java
+    transient Object[] elements;
+
+    transient int head;
+
+    transient int tail;
+```
+
+ArrayDeque的本体
+
+#### 初始化
+
+之前看ArrayDeque的源代码的时候，发现构造方法调用了一个很有意思的方法：
+```java
+    private static int calculateSize(int numElements) {
+        int initialCapacity = MIN_INITIAL_CAPACITY;
+        // Find the best power of two to hold elements.
+        // Tests "<=" because arrays aren't kept full.
+        if (numElements >= initialCapacity) {
+            initialCapacity = numElements;
+            initialCapacity |= (initialCapacity >>>  1);
+            initialCapacity |= (initialCapacity >>>  2);
+            initialCapacity |= (initialCapacity >>>  4);
+            initialCapacity |= (initialCapacity >>>  8);
+            initialCapacity |= (initialCapacity >>> 16);
+            initialCapacity++;
+
+            if (initialCapacity < 0)   // Too many elements, must back off
+                initialCapacity >>>= 1;// Good luck allocating 2 ^ 30 elements
+        }
+        return initialCapacity;
+    }
+
+    /**
+     * Allocates empty array to hold the given number of elements.
+     *
+     * @param numElements  the number of elements to hold
+     */
+    private void allocateElements(int numElements) {
+        elements = new Object[calculateSize(numElements)];
+    }
+```
+这是仨构造方法：
+```java
+    public ArrayDeque() {
+        elements = new Object[16];
+    }
+
+    public ArrayDeque(int numElements) {
+        allocateElements(numElements);
+    }
+
+    public ArrayDeque(Collection<? extends E> c) {
+        allocateElements(c.size());
+        addAll(c);
+    }
+```
+也就是说ArrayDeque默认大小是16，而其他两个方法都有指定的初始化大小
+
+回到*calculateSize(int numElements)*，光看代码自己也是一脸智障完全不知道这几行代码在干啥_(:D)∠)_
+
+于是便亲自试了下*new ArrayDeque(initCaopacity)*：
+| initCaopacity | 实际初始化容量 |
+| ---:   | ---:  | 
+| -1 | 8 |
+| 9 | 16 |
+| 15 | 16 |
+| 16 | 32 |
+| 31 | 32 |
+| Integer.MAX_VALUE | 1073741824 |
+
+这里已经能很明显看出来ArrayDeque是怎么处理的了
+
+#### 一些特性
+
+ArrayDeque是双向队列，也就是说能同时对队头和队尾进行操作
+
+![](../PIC/集合-ArrayDeque的一些方法.png)
+
+这里贴出其中几个方法（~~一定不是因为其他的懒得看了~~ 其实里头大部分是调用下面的方法
+
+```java
+    public void addFirst(E e) {
+        if (e == null)
+            throw new NullPointerException();
+        elements[head = (head - 1) & (elements.length - 1)] = e;
+        if (head == tail)
+            doubleCapacity();
+    }
+
+    public void addLast(E e) {
+        if (e == null)
+            throw new NullPointerException();
+        elements[tail] = e;
+        if ( (tail = (tail + 1) & (elements.length - 1)) == head)
+            doubleCapacity();
+    }
+
+    public E pollFirst() {
+        int h = head;
+        @SuppressWarnings("unchecked")
+        E result = (E) elements[h];
+        // Element is null if deque empty
+        if (result == null)
+            return null;
+        elements[h] = null;     // Must null out slot
+        head = (h + 1) & (elements.length - 1);
+        return result;
+    }
+
+    public E pollLast() {
+        int t = (tail - 1) & (elements.length - 1);
+        @SuppressWarnings("unchecked")
+        E result = (E) elements[t];
+        if (result == null)
+            return null;
+        elements[t] = null;
+        tail = t;
+        return result;
+    }
+```
+分别是从队头队尾的增删操作
+
+这里用例子看下（每一次循环做一次输出，这里把输出代码删了）：
+
+* **addFirst**
+```java
+    int[] array = {1, 2, 3, 4, 5, 6, 7, 8};
+    ArrayDeque<Integer> deque = new ArrayDeque<Integer>(9);
+    for (int i = 0; i < array.length; i++) 
+        deque.addFirst(array[i]);
+```
+output：
+```
+[ , , , , , , , , , , , , , , ,1]
+[ , , , , , , , , , , , , , ,2,1]
+[ , , , , , , , , , , , , ,3,2,1]
+[ , , , , , , , , , , , ,4,3,2,1]
+[ , , , , , , , , , , ,5,4,3,2,1]
+[ , , , , , , , , , ,6,5,4,3,2,1]
+[ , , , , , , , , ,7,6,5,4,3,2,1]
+[ , , , , , , , ,8,7,6,5,4,3,2,1]
+```
+
+* **addLast**
+```java
+    int[] array = {1, 2, 3, 4, 5, 6, 7, 8};
+    ArrayDeque<Integer> deque = new ArrayDeque<Integer>(9);
+    for (int i = 0; i < array.length; i++) 
+        deque.addFirst(array[i]);
+```
+output：
+```
+[1, , , , , , , , , , , , , , , ]
+[1,2, , , , , , , , , , , , , , ]
+[1,2,3, , , , , , , , , , , , , ]
+[1,2,3,4, , , , , , , , , , , , ]
+[1,2,3,4,5, , , , , , , , , , , ]
+[1,2,3,4,5,6, , , , , , , , , , ]
+[1,2,3,4,5,6,7, , , , , , , , , ]
+[1,2,3,4,5,6,7,8, , , , , , , , ]
+```
+
+* **addFirst & addLast**
+```java
+    int[] array = {1, 2, 3, 4, 5, 6, 7, 8};
+    ArrayDeque<Integer> deque = new ArrayDeque<Integer>(9);
+    for (int i = 0; i < array.length; i++) {
+        if (i % 2 == 1)
+            deque.addFirst(array[i]);   // 奇数
+        else
+            deque.addLast(array[i]);    // 偶数
+    }
+```
+output：
+```
+[ , , , , , , , , , , , , , , ,1]
+[2, , , , , , , , , , , , , , ,1]
+[2, , , , , , , , , , , , , ,3,1]
+[2,4, , , , , , , , , , , , ,3,1]
+[2,4, , , , , , , , , , , ,5,3,1]
+[2,4,6, , , , , , , , , , ,5,3,1]
+[2,4,6, , , , , , , , , ,7,5,3,1]
+[2,4,6,8, , , , , , , , ,7,5,3,1]
+```
+
+**以上面↑↑↑的数据作为初始数据，试下删除**
+
+* **pollFirst**
+```
+[2,4,6,8, , , , , , , , ,7,5,3,1]
+[2,4,6,8, , , , , , , , , ,5,3,1]
+[2,4,6,8, , , , , , , , , , ,3,1]
+[2,4,6,8, , , , , , , , , , , ,1]
+[2,4,6,8, , , , , , , , , , , , ]
+[ ,4,6,8, , , , , , , , , , , , ]
+[ , ,6,8, , , , , , , , , , , , ]
+[ , , ,8, , , , , , , , , , , , ]
+[ , , , , , , , , , , , , , , , ]
+```
+
+* **pollLast**
+```
+[2,4,6,8, , , , , , , , ,7,5,3,1]
+[2,4,6, , , , , , , , , ,7,5,3,1]
+[2,4, , , , , , , , , , ,7,5,3,1]
+[2, , , , , , , , , , , ,7,5,3,1]
+[ , , , , , , , , , , , ,7,5,3,1]
+[ , , , , , , , , , , , ,7,5,3, ]
+[ , , , , , , , , , , , ,7,5, , ]
+[ , , , , , , , , , , , ,7, , , ]
+[ , , , , , , , , , , , , , , , ]
+```
+
+ArrayDeque简单的操作大概就是这样
+
+| 搭配 | 搭配 | 效果 |
+| --- | --- | ---: | 
+| addFirst(E e) | pollFirst() | 栈 | 
+| addLast(E e) | pollLast() | 栈 | 
+| addFirst(E e) | pollLast() | 队列 | 
+| addLast(E e) | pollFirst() | 队列 | 
+
+#### 扩容
+
+ArrayDeque的扩容是直接x2
+```java
+    private void doubleCapacity() {
+        assert head == tail;
+        int p = head;
+        int n = elements.length;
+        int r = n - p; // number of elements to the right of p
+        int newCapacity = n << 1;
+        if (newCapacity < 0)
+            throw new IllegalStateException("Sorry, deque too big");
+        Object[] a = new Object[newCapacity];
+        System.arraycopy(elements, p, a, 0, r);
+        System.arraycopy(elements, 0, a, r, p);
+        elements = a;
+        head = 0;
+        tail = n;
+    }
+
+    /**
+     * System.arraycopy的方法签名
+     */
+    public static native void arraycopy(Object src,  int  srcPos,
+                                        Object dest, int destPos,
+                                        int length);
+```
+ArrayDeque的扩容很简单，找了张图（来源：https://www.cnblogs.com/yangming1996/p/6973849.html ）
+
+![](../PIC/集合-ArrayDeque的扩容.png)
+
+
