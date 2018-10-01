@@ -4,15 +4,11 @@ List集合表示一个元素有序、可重复的线性表
 
 平时使用最多的有ArrayList、LinkedList、Vector、Stack
 
----
-
-## AbstractList
+# AbstractList
 
 AbstractList是一个抽象类，实现了List接口，是List接口的主要子类
 
----
-
-## ArrayList
+# ArrayList
 
 ArrayList继承了AbstractList，底层使用的是Object数组，因此ArrayList本质上是一个可以动态扩容的数组。另外，ArrayList不支持多线程同步
 
@@ -23,7 +19,7 @@ private static final int DEFAULT_CAPACITY = 10;
 transient Object[] elementData;
 ```
 
-#### 初始化
+## 初始化
 
 ArrayList的初始化构造函数有仨：
  * 提供一个初始容量
@@ -71,7 +67,7 @@ ArrayList的初始化构造函数有仨：
     }
 ```
 
-#### 扩容
+## 扩容
 
 这里由*add*方法作为起点开始追踪
 
@@ -149,9 +145,7 @@ ArrayList扩容操作大致如上，也就是说，ArrayList默认扩容大小�
 讲真扩容操作看起来简单，换作自己写可能1min不到就出来一句*Arrays.copyOf(elementData, newCapacity)*，over。当初第一次看源码的时候
 也是看得一愣一愣的
 
----
-
-## Vector
+# Vector
 
 Vector与ArrayList非常类似，继承了AbstractList，底层数据结构也是一个Object数组
 
@@ -159,11 +153,11 @@ Vector与ArrayList非常类似，继承了AbstractList，底层数据结构也�
 
 （当然，效率嘛………………
 
-#### 保证线程安全的方式
+## 保证线程安全的方式
 
 Vector主要是使用*synchronized*关键字进行同步的
 
-#### capacityIncrement
+## capacityIncrement
 
 扫Vector的源码的时候发现成员变量中多了一个*capacityIncrement*
 
@@ -185,9 +179,7 @@ IDEA选中后发现只有两处用到了：序列化writeObject的时候和扩�
 ```
 也就是说Vector的扩容默认是2x的
 
----
-
-## LinkedList
+# LinkedList
 
 LinkedList继承自AbstractSequentialList，AbstractSequentialList继承自AbstractList
 
@@ -218,7 +210,7 @@ LinkedList不支持多线程
 
 LinkedList大概可以直接当栈或者队列用
 
-#### 源码赏析
+## 源码赏析
 ```java
     /**
      * Links e as first element.
@@ -320,9 +312,7 @@ LinkedList大概可以直接当栈或者队列用
 
 基本上LinkedList的增删操作最终都会调用上面的方法
 
----
-
-## Stack
+# Stack
 
 Stack，栈
 

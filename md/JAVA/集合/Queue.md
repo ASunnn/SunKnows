@@ -8,9 +8,7 @@ Queue接口是一个单向队列，它的子类Deque接口则是一个双向队�
 
 常用的实现类有PriorityQueue和ArrayDeque（还有LinkedList，List接口部分已经有了
 
----
-
-## PriorityQueue
+# PriorityQueue
 
 PriorityQueue即优先队列，队列根据元素的权值大小保持了队中元素的顺序，并且保证出队的是权值最小的元素
 
@@ -24,7 +22,7 @@ PriorityQueue即优先队列，队列根据元素的权值大小保持了队中�
     transient Object[] queue;
 ```
 
-#### 初始化
+## 初始化
 
 PriorityQueue的构造方法乍一看很多，其实你叼我我叼你最后只有两个是有用的：
 ```java
@@ -101,12 +99,13 @@ PriorityQueue的构造方法乍一看很多，其实你叼我我叼你最后只�
     }
 ```
 
-#### 操作
+## 操作
+
 PriorityQueue的操作和正常的队列差不多，该有的方法都有，使用起来没什么两样，只不过它会自动维护小顶堆，取到的永远是最小的元素而已
 
 ![](../PIC/集合-PriorityQueue的public方法.png)
 
-#### 堆
+## 堆
 
 PriorityQueue是一个小顶堆，当有增删操作的时候必须要对这个堆进行维护
 
@@ -206,9 +205,7 @@ PriorityQueue是一个小顶堆，当有增删操作的时候必须要对这个�
 ```
 看得出这些操作都是看着熟悉的堆操作
 
----
-
-## Deque
+# Deque
 
 Deque接口是Queue接口的子类
 
@@ -219,9 +216,7 @@ Deque接口是Queue接口的子类
 
 Deque的常用实现有ArrayDeque和LinkedList
 
----
-
-## ArrayDeque
+# ArrayDeque
 
 ArrayDeque，实现了Deque接口，底层是用Object数组实现的循环队列
 
@@ -235,7 +230,7 @@ ArrayDeque，实现了Deque接口，底层是用Object数组实现的循环队�
 
 ArrayDeque的本体
 
-#### 初始化
+## 初始化
 
 之前看ArrayDeque的源代码的时候，发现构造方法调用了一个很有意思的方法：
 ```java
@@ -298,7 +293,7 @@ ArrayDeque的本体
 
 这里已经能很明显看出来ArrayDeque是怎么处理的了
 
-#### 一些特性
+## 一些特性
 
 ArrayDeque是双向队列，也就是说能同时对队头和队尾进行操作
 
@@ -448,7 +443,7 @@ ArrayDeque简单的操作大概就是这样
 | addFirst(E e) | pollLast() | 队列 | 
 | addLast(E e) | pollFirst() | 队列 | 
 
-#### 扩容
+## 扩容
 
 ArrayDeque的扩容是直接x2
 ```java
