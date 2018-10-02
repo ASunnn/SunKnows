@@ -1,4 +1,4 @@
-package sunnn.test;
+package sunnn.knows.test;
 
 /**
  * 数据结构
