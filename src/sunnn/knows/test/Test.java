@@ -1,8 +1,13 @@
 package sunnn.knows.test;
 
 import com.sun.corba.se.spi.orbutil.threadpool.ThreadPool;
+import sun.awt.Mutex;
 
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.locks.AbstractQueuedSynchronizer;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -19,8 +24,10 @@ import java.util.concurrent.locks.ReentrantLock;
  *          线程安全
  *      并发
  *          多线程
+ *          线程池
  *          锁
- *          CAS
+ *          CAS/原子类
+ *          AQS
  *          volatile
  *          阻塞队列
  *          *底层原理
@@ -40,11 +47,11 @@ import java.util.concurrent.locks.ReentrantLock;
 public class Test {
 
     public static void main(String[] args) throws ExecutionException, InterruptedException {
-        Thread t = new Thread(new R());
-        t.start();
-        t.join();
+        Lock lock = new ReentrantLock();
 
-        System.out.println("Work Complete");
+        Condition a = lock.newCondition();
+        lock.lock();
+        a.await();
     }
 
     static class R implements Runnable {
