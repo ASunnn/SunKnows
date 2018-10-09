@@ -1,17 +1,5 @@
 package sunnn.knows.test;
 
-import com.sun.corba.se.spi.orbutil.threadpool.ThreadPool;
-import sun.awt.Mutex;
-
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.locks.AbstractQueuedSynchronizer;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
-
 /**
  * 数据结构
  * 计算机网络
@@ -31,9 +19,13 @@ import java.util.concurrent.locks.ReentrantLock;
  *          volatile
  *          阻塞队列
  *          *底层原理
- *      虚拟机
  *      网络编程
  *      其他
+ * JVM
+ *      内存区域
+ *      GC
+ *      类加载机制
+ *      Java内存模型
  * 设计模式
  * Web
  *      Spring
@@ -42,29 +34,26 @@ import java.util.concurrent.locks.ReentrantLock;
  *      HTTP
  * 数据库
  *      MySQL
+ *          事务
+ *          索引
+ *          引擎
  *      Mongo
  */
 public class Test {
 
-    public static void main(String[] args) throws ExecutionException, InterruptedException {
-        Lock lock = new ReentrantLock();
+    Object reference;
 
-        Condition a = lock.newCondition();
-        lock.lock();
-        a.await();
-    }
+    public static void main(String[] args) {
 
-    static class R implements Runnable {
-        @Override
-        public void run() {
-            System.out.println("Work Start");
+        Test t1 = new Test();
+        Test t2 = new Test();
 
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+        t1.reference = t2;
+        t2.reference = t1;
+
+        t1 = null;
+        t2 = null;
+
     }
 }
 
