@@ -308,7 +308,7 @@ public interface Condition {
 
 #### 等待队列
 
-平时有用过这货的都知道，它的*await()*和*singal()*某种程度上比*wait()*、*notify()*好用，它能定向的唤醒某一个线程
+平时有用过这货的都知道，它的*await()*和*singal()*某种程度上比*wait()*、*notify()* 好用，它能定向的唤醒某一个线程
 
 *Condition*之所以能做到这个，是因为每个*Condition*类都有一个等待队列，它保存的节点也是和之前同步队列里一样的节点
 

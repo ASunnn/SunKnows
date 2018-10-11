@@ -87,7 +87,7 @@ public class Test {
 
 一般情况下复制算法把空间分为一块Eden区和两块Survivor区，Eden:Survivor=8:1。每次使用Eden和一块Survivor，GC时，将它们中存活的对象移到另一块Survivor区，然后清理掉Eden和刚使用的Survivor区。接下来使用Eden和刚刚的另一块Survivor区
 
-之所以能这样做，是因为大部分情况下，Java堆大部分情况下的对象都是朝生暮死的
+之所以能这样做，是因为大部分情况下，Java堆大部分情况下的对象都是朝生夕灭的
 
 ## 标记-整理算法
 

@@ -73,6 +73,52 @@ HashMap默认桶的大小为16，并且桶大小只能为2的次方
 
 当HashMap内Node节点的数量大于threshold时，就会触发扩容
 
+## 初始化
+
+*HahMap*有两个实际上的构造方法：
+
+```java
+    public HashMap(Map<? extends K, ? extends V> m) {
+        this.loadFactor = DEFAULT_LOAD_FACTOR;
+        putMapEntries(m, false);
+    }
+
+    public HashMap(int initialCapacity, float loadFactor) {
+        if (initialCapacity < 0)
+            throw new IllegalArgumentException("Illegal initial capacity: " +
+                                               initialCapacity);
+        if (initialCapacity > MAXIMUM_CAPACITY)
+            initialCapacity = MAXIMUM_CAPACITY;
+        if (loadFactor <= 0 || Float.isNaN(loadFactor))
+            throw new IllegalArgumentException("Illegal load factor: " +
+                                               loadFactor);
+        this.loadFactor = loadFactor;
+        this.threshold = tableSizeFor(initialCapacity);
+    }
+```
+
+看第二个，它在*tableSizeFor*对传进来的自定义容量进行了处理
+
+```java
+    static final int tableSizeFor(int cap) {
+        int n = cap - 1;
+        n |= n >>> 1;
+        n |= n >>> 2;
+        n |= n >>> 4;
+        n |= n >>> 8;
+        n |= n >>> 16;
+        return (n < 0) ? 1 : (n >= MAXIMUM_CAPACITY) ? MAXIMUM_CAPACITY : n + 1;
+    }
+```
+
+简单来说，这个方法会把cap调整为一个不小于它的最小的2^n数（毕竟桶大小只能为2的次方
+
+比如1会变成2，9会变成16，99会变成128这样
+
+**HashMap的本体数组实际初始化的位置是在第一次往Map丢东西的时候**
+
+本体数组初始化逻辑在扩容方法里，之后会讲
+
 ## hash
 
 在增删改凡是要定位到桶数组的索引的时候，都需要对key进行hash
