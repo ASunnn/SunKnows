@@ -41,19 +41,7 @@ package sunnn.knows.test;
  */
 public class Test {
 
-    Object reference;
-
     public static void main(String[] args) {
-
-        Test t1 = new Test();
-        Test t2 = new Test();
-
-        t1.reference = t2;
-        t2.reference = t1;
-
-        t1 = null;
-        t2 = null;
-
     }
 }
 
