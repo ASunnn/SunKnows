@@ -536,8 +536,7 @@ Dictionary的key不能为null，所以导致Hashtable也不能接收null的key
 
 LinkedHashMap继承自HashMap
 
-LinkedHashMap在HashMap的哈希表基础上使用了双向链表，使得LinkedHashMap的迭代顺序和插入顺序一致
-
+LinkedHashMap在HashMap的哈希表基础上使用了双向链表，使得**LinkedHashMap的迭代顺序和插入顺序一致**
 
 ```java
     transient LinkedHashMap.Entry<K,V> head;
@@ -564,6 +563,8 @@ LinkedHashMap的节点在Node的基础上增加了向前向后的引用，这用
     void afterNodeRemoval(Node<K,V> p) { }
 ```
 而在LinkedHashMap中重写了这三个方法，它们的作用主要是维护双链表，使得它的顺序保证正确
+
+> *afterNodeAccess(Node<K,V> p)*，它会把访问的节点丢到链表的最后尾，因此队头的节点是最近一段时间最少访问的。**因此可以用LinkedHashMap实现一个LRU Cache**
 
 # SortedMap
 
