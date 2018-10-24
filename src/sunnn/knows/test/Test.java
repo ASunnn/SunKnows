@@ -50,8 +50,59 @@ import java.util.concurrent.locks.Lock;
  */
 public class Test {
 
-    public static void main(String[] args) {
+    private static final Object o1 = new Object();
 
+    private static final Object o2 = new Object();
+
+    public static void main(String[] args) {
+        ExecutorService pool = Executors.newFixedThreadPool(2);
+
+        TaskOne t1 = new TaskOne();
+        TaskTwo t2 = new TaskTwo();
+        pool.submit(t1);
+        pool.submit(t2);
+    }
+
+    static class TaskOne implements Runnable {
+        @Override
+        public void run() {
+            synchronized (o1) {
+                sleepDown();
+
+                doSomething();
+            }
+        }
+
+        private void doSomething() {
+            synchronized (o2) {
+                System.out.println("Hello World");
+            }
+        }
+    }
+
+    static class TaskTwo implements Runnable {
+        @Override
+        public void run() {
+            synchronized (o2) {
+                sleepDown();
+
+                doSomething();
+            }
+        }
+
+        private void doSomething() {
+            synchronized (o1) {
+                System.out.println("Hello World");
+            }
+        }
+    }
+
+    private static void sleepDown() {
+        try {
+            Thread.sleep(20);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }
 
